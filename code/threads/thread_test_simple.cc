@@ -7,6 +7,7 @@
 
 #include "thread_test_simple.hh"
 #include "system.hh"
+#include "semaphore.hh"
 
 #include <stdio.h>
 #include <string.h>
@@ -20,10 +21,19 @@
 
 bool threadsDone[4];
 
+#ifdef SEMAPHORE_TEST
+    Semaphore semaphore("Simple Test Semaphore", 3);
+#endif
+
 void
 SimpleThread(void *name_)
 {
 
+
+    #ifdef SEMAPHORE_TEST
+        semaphore.P();
+        DEBUG('s',"resta hilo %s\n", currentThread->GetName());
+    #endif
     // If the lines dealing with interrupts are commented, the code will
     // behave incorrectly, because printf execution may cause race
     // conditions.
@@ -31,6 +41,11 @@ SimpleThread(void *name_)
         printf("*** Thread `%s` is running: iteration %u\n", currentThread->GetName(), num);
         currentThread->Yield();
     }
+
+    #ifdef SEMAPHORE_TEST
+        semaphore.V();
+        DEBUG('s',"suma hilo %s\n", currentThread->GetName());
+    #endif
     
     unsigned threadNum = atoi(currentThread->GetName());
 
