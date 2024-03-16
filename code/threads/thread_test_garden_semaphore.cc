@@ -5,7 +5,7 @@
 /// limitation of liability and disclaimer of warranty provisions.
 
 
-#include "thread_test_garden.hh"
+#include "thread_test_garden_semaphore.hh"
 #include "system.hh"
 
 #include <stdio.h>
@@ -16,22 +16,26 @@ static const unsigned ITERATIONS_PER_TURNSTILE = 50;
 static bool done[NUM_TURNSTILES];
 static int count;
 
+Semaphore semaphore("Simple Test Semaphore", 3);
+
 static void
 Turnstile(void *n_)
 {
     unsigned *n = (unsigned *) n_;
 
     for (unsigned i = 0; i < ITERATIONS_PER_TURNSTILE; i++) {
+        semaphore.P();
         int temp = count;
-        count = temp + 1;
         currentThread->Yield();
+        count = temp + 1;
+        semaphore.V();
     }
     printf("Turnstile %u finished. Count is now %u.\n", *n, count);
     done[*n] = true;
 }
 
 void
-ThreadTestGarden()
+ThreadTestGardenSemaphore()
 {
     //Launch a new thread for each turnstile 
     //(except one that will be run by the main thread)

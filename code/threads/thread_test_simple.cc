@@ -28,11 +28,9 @@ bool threadsDone[4];
 void
 SimpleThread(void *name_)
 {
-
-
     #ifdef SEMAPHORE_TEST
         semaphore.P();
-        DEBUG('s',"resta hilo %s\n", currentThread->GetName());
+        DEBUG('s',"Semaforo decrementado por hilo %s\n", currentThread->GetName());
     #endif
     // If the lines dealing with interrupts are commented, the code will
     // behave incorrectly, because printf execution may cause race
@@ -44,7 +42,7 @@ SimpleThread(void *name_)
 
     #ifdef SEMAPHORE_TEST
         semaphore.V();
-        DEBUG('s',"suma hilo %s\n", currentThread->GetName());
+        DEBUG('s',"Semaforo incrementado por hilo %s\n", currentThread->GetName());
     #endif
     
     unsigned threadNum = atoi(currentThread->GetName());
@@ -53,7 +51,6 @@ SimpleThread(void *name_)
         threadsDone[threadNum - 2] = true;
 
     printf("!!! Thread `%s` has finished SimpleThread\n", currentThread->GetName());
- 
 }
 
 /// Set up a ping-pong between several threads.
