@@ -7,6 +7,7 @@
 
 #include "thread_test_garden_semaphore.hh"
 #include "system.hh"
+#include "semaphore.hh"
 
 #include <stdio.h>
 
@@ -16,7 +17,7 @@ static const unsigned ITERATIONS_PER_TURNSTILE = 50;
 static bool done[NUM_TURNSTILES];
 static int count;
 
-Semaphore semaphore("Simple Test Semaphore", 3);
+Semaphore semaphore("Simple Test Semaphore", 1);
 
 static void
 Turnstile(void *n_)
