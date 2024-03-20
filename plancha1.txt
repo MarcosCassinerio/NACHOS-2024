@@ -2,16 +2,16 @@
 Nos permite trabajar en un entorno mas controlado, donde nos es mas facil debuggear y asignar distintos recursos para la ejecucion. Tambien nos permite ver las estadisticas una vez finalizada la ejecucion.
 
 2-
-Encontramos el tamaÃ±o de la memoria simulada en la linea MEMORY_SIZE = NUM_PHYS_PAGES * PAGE_SIZE en machine/mmu.hh
-NUM_PHYS_PAGES es 32
-Vemos que PAGE_SIZE = SECTOR_SIZE y SECTOR_SIZE = 128 Bytes
+Encontramos el tamaño de la memoria simulada en la linea MEMORY_SIZE = DEFAULT_NUM_PHYS_PAGES * PAGE_SIZE en machine/mmu.hh
+DEFAULT_NUM_PHYS_PAGES es 32
+Vemos que PAGE_SIZE = SECTOR_SIZE y SECTOR_SIZE = 128 bytes
 Por lo tanto la memoria simulada es de 4KB
 
 3- 
-Podemos modificarlo, aumentando el tamaÃ±o de cada pagina (SECTOR_SIZE o modificando directamente PAGE_SIZE) o aumentando la cantidad de paginas (NUM_PHYS_PAGES)
+Podemos modificarlo, aumentando el tamaño de cada pagina (SECTOR_SIZE o modificando directamente PAGE_SIZE) o aumentando la cantidad de paginas (DEFAULT_NUM_PHYS_PAGES)
 
 4-
-Encontramos que DISK_SIZE = MAGIC_SIZE + NUM_SECTORS * SECTOR_SIZE, donde NUM_SECTORS = SECTORS_PER_TRACK (=32) * NUM_TRACKS (=32) = 1024. SECTOR_SIZE se vio anteriormente que es 128 Bytes, y MAGIC_SIZE es sizeof(int) = 8. Por lo tanto DISK_SIZE es 131080 Bytes
+Encontramos que DISK_SIZE = MAGIC_SIZE + NUM_SECTORS * SECTOR_SIZE, donde NUM_SECTORS = SECTORS_PER_TRACK (=32) * NUM_TRACKS (=32) = 1024. SECTOR_SIZE se vio anteriormente que es 128 Bytes, y MAGIC_SIZE es sizeof(int) = 8. Por lo tanto DISK_SIZE es 131080 bytes
 
 5-
 Vemos que en encoding.hh se enumeran 60 instrucciones simuladas de MIPS
@@ -93,7 +93,6 @@ DEBUG si la flag esta activada, imprime un mensaje pasado por argumento
 /// * `f` -- file system (requires *FILESYS*).
 /// * `a` -- address spaces (requires *USER_PROGRAM*).
 /// * `e` -- exception handling (requires *USER_PROGRAM*).
-/// * `n` -- network emulation (requires *NETWORK*).
 
 10-
 USER_PROGRAM esta definido en:
@@ -111,18 +110,17 @@ FILESYS_STUB esta definido en:
 	-vmem/Makefile
 
 11-
-///     nachos [-d <debugflags>] [-do <debugopts>] [-p]
-///            [-rs <random seed #>] [-z] [-tt]
-///            [-s] [-x <nachos file>] [-tc <consoleIn> <consoleOut>]
+///     nachos [-d <debugflags>] [-do <debugopts>] 
+///            [-rs <random seed #>] [-z] [-tt|-tN] 
+///            [-m <num phys pages>]
+///            [-s] [-x <nachos file>] [-tc <consoleIn> <consoleOut>] 
 ///            [-f] [-cp <unix file> <nachos file>] [-pr <nachos file>]
 ///            [-rm <nachos file>] [-ls] [-D] [-c] [-tf]
-///            [-n <network reliability>] [-id <machine id>]
-///            [-tn <other machine id>]
 
 /// * `-rs` -- causes `Yield` to occur at random (but repeatable) spots.
-Esto hace que cada cierta cantidad de ticks, segÃºn un nÃºmero random generado por la seed del argumento, ocurra un yield.
+Esto hace que cada cierta cantidad de ticks, según un número random generado por la seed del argumento, ocurra un yield.
 
 13-
 La clase List define una lista simplemente enlazada.
 La clase SynchList, utilizando List, sirve para lograr la sincronizacion de esta lista simplemente enlazada.
-Solo un hilo a la vez puede acceder a los datos de esta, y si algun hilo quiere eliminar un elemento de la lista, este esperarÃ¡ hasta que haya un elemento en esta.
+Solo un hilo a la vez puede acceder a los datos de esta, y si algun hilo quiere eliminar un elemento de la lista, este esperará hasta que haya un elemento en esta.
