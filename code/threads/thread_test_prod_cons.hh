@@ -7,6 +7,10 @@
 #ifndef NACHOS_THREADS_THREADTESTPRODCONS__HH
 #define NACHOS_THREADS_THREADTESTPRODCONS__HH
 
+#define prods 5;
+#define cons 5;
+
+#define max 100;
 
 void ThreadTestProdCons();
 

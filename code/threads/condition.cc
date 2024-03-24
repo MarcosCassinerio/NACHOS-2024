@@ -23,12 +23,14 @@
 
 Condition::Condition(const char *debugName, Lock *conditionLock)
 {
-    // TODO
+    name = debugName;
+    lock = conditionLock;
+    semaphore = new Semaphore("Condition", 0);
 }
 
 Condition::~Condition()
 {
-    // TODO
+    delete semaphore;
 }
 
 const char *
@@ -40,17 +42,33 @@ Condition::GetName() const
 void
 Condition::Wait()
 {
-    // TODO
+    DEBUG('s', "Thread \"%s\" is Waiting\n", currentThread->GetName());
+    sleeping ++;
+    lock.Release();
+    
+    semaphore.P();
+
+    lock->Acquire();
 }
 
 void
 Condition::Signal()
 {
-    // TODO
+    DEBUG('s', "Thread \"%s\" is doing Signal\n", currentThread->GetName());
+    ASSERT(lock->IsHeldByCurrentThread());
+
+    if (sleeping) {
+        sleeping --;
+        semaphore.V();
+    }
 }
 
 void
 Condition::Broadcast()
 {
-    // TODO
+    DEBUG('s', "Thread \"%s\" is doing Broadcast\n", currentThread->GetName());
+    ASSERT(lock->IsHeldByCurrentThread());
+
+    for (; sleeping; sleeping --)
+        semaphore.V();
 }

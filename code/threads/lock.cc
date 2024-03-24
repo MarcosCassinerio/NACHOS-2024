@@ -21,10 +21,15 @@
 /// Dummy functions -- so we can compile our later assignments.
 
 Lock::Lock(const char *debugName)
-{}
+{
+    name = debugName;
+    semaphore = new Semaphore("Lock", 1);
+}
 
 Lock::~Lock()
-{}
+{
+    delete semaphore;
+}
 
 const char *
 Lock::GetName() const
@@ -35,18 +40,25 @@ Lock::GetName() const
 void
 Lock::Acquire()
 {
-    // TODO
+    DEBUG('s', "Thread \"%s\" is doing Acquire\n", currentThread->GetName());
+    ASSERT(!IsHeldByCurrentThread());
+
+    semaphore.P();
+    currentHolder = currentThread;
 }
 
 void
 Lock::Release()
 {
-    // TODO
+    DEBUG('s', "Thread \"%s\" is doing Release\n", currentThread->GetName());
+    ASSERT(IsHeldByCurrentThread());
+
+    currentHolder = nullptr;
+    semaphore.V();
 }
 
 bool
 Lock::IsHeldByCurrentThread() const
 {
-    // TODO
-    return false;
+    return currentThread == currentHolder;
 }
