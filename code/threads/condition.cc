@@ -16,6 +16,7 @@
 
 
 #include "condition.hh"
+#include "system.hh"
 
 
 /// Dummy functions -- so we can compile our later assignments.
@@ -25,7 +26,7 @@ Condition::Condition(const char *debugName, Lock *conditionLock)
 {
     name = debugName;
     lock = conditionLock;
-    semaphore = new Semaphore("Condition", 0);
+    semaphore = new Semaphore("Condition Semaphore", 0);
 }
 
 Condition::~Condition()
@@ -44,9 +45,9 @@ Condition::Wait()
 {
     DEBUG('s', "Thread \"%s\" is Waiting\n", currentThread->GetName());
     sleeping ++;
-    lock.Release();
+    lock->Release();
     
-    semaphore.P();
+    semaphore->P();
 
     lock->Acquire();
 }
@@ -59,7 +60,7 @@ Condition::Signal()
 
     if (sleeping) {
         sleeping --;
-        semaphore.V();
+        semaphore->V();
     }
 }
 
@@ -70,5 +71,5 @@ Condition::Broadcast()
     ASSERT(lock->IsHeldByCurrentThread());
 
     for (; sleeping; sleeping --)
-        semaphore.V();
+        semaphore->V();
 }

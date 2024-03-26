@@ -19,6 +19,7 @@
 
 
 #include "lock.hh"
+#include "semaphore.hh"
 
 
 /// This class defines a “condition variable”.

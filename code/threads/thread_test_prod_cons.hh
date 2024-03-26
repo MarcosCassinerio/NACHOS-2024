@@ -7,12 +7,15 @@
 #ifndef NACHOS_THREADS_THREADTESTPRODCONS__HH
 #define NACHOS_THREADS_THREADTESTPRODCONS__HH
 
-#define prods 5;
-#define cons 5;
+#include <stdio.h>
+#include "condition.hh"
 
-#define max 100;
+#define PRODS 5
+#define CONS 5
+
+#define MAX_AMOUNT 50
+#define MAX_ITERS 5
 
 void ThreadTestProdCons();
-
 
 #endif

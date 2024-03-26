@@ -16,6 +16,7 @@
 
 
 #include "lock.hh"
+#include "system.hh"
 
 
 /// Dummy functions -- so we can compile our later assignments.
@@ -43,7 +44,7 @@ Lock::Acquire()
     DEBUG('s', "Thread \"%s\" is doing Acquire\n", currentThread->GetName());
     ASSERT(!IsHeldByCurrentThread());
 
-    semaphore.P();
+    semaphore->P();
     currentHolder = currentThread;
 }
 
@@ -54,7 +55,7 @@ Lock::Release()
     ASSERT(IsHeldByCurrentThread());
 
     currentHolder = nullptr;
-    semaphore.V();
+    semaphore->V();
 }
 
 bool
