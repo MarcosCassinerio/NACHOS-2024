@@ -13,7 +13,7 @@
 #define PRODS 5
 #define CONS 5
 
-#define MAX_AMOUNT 50
+#define MAX_AMOUNT 10
 #define MAX_ITERS 5
 
 void ThreadTestProdCons();
