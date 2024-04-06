@@ -10,11 +10,11 @@
 #include <stdio.h>
 #include "condition.hh"
 
-#define PRODS 5
-#define CONS 5
+#define PRODS 1
+#define CONS 1
 
-#define MAX_AMOUNT 10
-#define MAX_ITERS 5
+#define MAX_AMOUNT 3
+#define MAX_ITERS 1000
 
 void ThreadTestProdCons();
 

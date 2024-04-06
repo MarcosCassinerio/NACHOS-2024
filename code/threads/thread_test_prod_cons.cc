@@ -13,6 +13,7 @@ unsigned amount = 0;
 Lock *lock = new Lock("Lock");
 Condition *conditionProd = new Condition("Condition Prod", lock);
 Condition *conditionCons = new Condition("Condition Cons", lock);
+static unsigned buffer[MAX_AMOUNT];
 static bool done[PRODS + CONS];
 
 static void
@@ -67,6 +68,8 @@ Producer(void *n_)
 void
 ThreadTestProdCons()
 {
+    buffer = [];
+
     for (unsigned i = 0; i < PRODS; i++) {
         done[i] = false;
         unsigned *pos = new unsigned();
