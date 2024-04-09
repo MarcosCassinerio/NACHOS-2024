@@ -79,8 +79,7 @@ private:
 
     // Other needed fields are to be added here.
     Lock *lock;
-    Semaphore *semaphore;
-    unsigned sleeping = 0;
+    List<Semaphore*> *semaphoreList;
 };
 
 

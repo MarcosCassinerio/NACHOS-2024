@@ -8,7 +8,7 @@
 #define NACHOS_THREADS_THREADTESTPRODCONS__HH
 
 #include <stdio.h>
-#include "condition.hh"
+#include "synch_list.hh"
 
 #define PRODS 1
 #define CONS 1

@@ -10,11 +10,12 @@
 
 
 unsigned amount = 0;
+SynchList<char*> *lista = new SynchList<char*>;
 Lock *lock = new Lock("Lock");
 Condition *conditionProd = new Condition("Condition Prod", lock);
-Condition *conditionCons = new Condition("Condition Cons", lock);
-static unsigned buffer[MAX_AMOUNT];
 static bool done[PRODS + CONS];
+
+
 
 static void
 Consumer(void *n_) 
@@ -22,24 +23,26 @@ Consumer(void *n_)
     unsigned *n = (unsigned *) n_;
     for (unsigned i = 0; i < MAX_ITERS; i++) {
         lock->Acquire();
-        
+
         if (amount == 0)
-            conditionCons->Wait();
+            printf("Consumidor %d esperando (buffer vacio)\n", *n);
 
+        lock->Release();
+
+        char* produce = lista->Pop();
+
+        lock->Acquire();
         conditionProd->Signal();
-
+        printf("Consumidor %d consume: %s\n", *n, produce);
         amount -= 1;
-
-        printf("Consumer %d consumed\n", *n);
 
         lock->Release();
     }
     
-    printf("Consumer %d finished\n", *n);
+    printf("Consumidor %d termina\n", *n);
     done[*n] = true;
     delete n;
 }
-
 static void
 Producer(void *n_)
 {
@@ -48,19 +51,22 @@ Producer(void *n_)
         lock->Acquire();
         
         if (amount == MAX_AMOUNT)
+            printf("Productor %d esperando (buffer lleno)\n", *n);
+
+        while (amount == MAX_AMOUNT)
             conditionProd->Wait();
-        
-        conditionCons->Signal();
 
+        char* produce = new char[64];
+        sprintf(produce, "%d_%d", *n, i);
+        lista->Append(produce);
         amount += 1;
-
-        printf("Productor %d produced\n", *n);
+        printf("Productor %d produce: %s en %d\n", *n, produce, amount);
 
         lock->Release();
     }
     
     
-    printf("Productor %d finished\n", *n);
+    printf("Productor %d termina\n", *n);
     done[CONS + (*n)] = true;
     delete n;
 }
@@ -68,8 +74,6 @@ Producer(void *n_)
 void
 ThreadTestProdCons()
 {
-    buffer = [];
-
     for (unsigned i = 0; i < PRODS; i++) {
         done[i] = false;
         unsigned *pos = new unsigned();

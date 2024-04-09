@@ -26,12 +26,12 @@ Condition::Condition(const char *debugName, Lock *conditionLock)
 {
     name = debugName;
     lock = conditionLock;
-    semaphore = new Semaphore("Condition Semaphore", 0);
+    semaphoreList = new List<Semaphore*>();
 }
 
 Condition::~Condition()
 {
-    delete semaphore;
+    delete semaphoreList;
 }
 
 const char *
@@ -44,10 +44,13 @@ void
 Condition::Wait()
 {
     DEBUG('s', "Thread \"%s\" is Waiting\n", currentThread->GetName());
-    sleeping ++;
+    ASSERT(lock->IsHeldByCurrentThread());
+
+    Semaphore *waitSemaphore = new Semaphore("Wait Semaphore", 0);
+    semaphoreList->Append(waitSemaphore);
     lock->Release();
-    
-    semaphore->P();
+
+    waitSemaphore->P();
 
     lock->Acquire();
 }
@@ -58,10 +61,10 @@ Condition::Signal()
     DEBUG('s', "Thread \"%s\" is doing Signal\n", currentThread->GetName());
     ASSERT(lock->IsHeldByCurrentThread());
 
-    if (sleeping) {
-        sleeping --;
-        semaphore->V();
-    }
+    Semaphore *currentSemaphore = semaphoreList->Pop();
+
+    if (currentSemaphore != nullptr)
+        currentSemaphore->V();
 }
 
 void
@@ -70,6 +73,8 @@ Condition::Broadcast()
     DEBUG('s', "Thread \"%s\" is doing Broadcast\n", currentThread->GetName());
     ASSERT(lock->IsHeldByCurrentThread());
 
-    for (; sleeping; sleeping --)
-        semaphore->V();
+    while (!semaphoreList->IsEmpty()) {
+        Semaphore *currentSemaphore = semaphoreList->Pop();
+        currentSemaphore->V();
+    }
 }
