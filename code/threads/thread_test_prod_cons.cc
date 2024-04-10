@@ -10,12 +10,11 @@
 
 
 unsigned amount = 0;
-SynchList<char*> *lista = new SynchList<char*>;
+char *buffer[MAX_AMOUNT];
 Lock *lock = new Lock("Lock");
 Condition *conditionProd = new Condition("Condition Prod", lock);
+Condition *conditionCons = new Condition("Condition Cons", lock);
 static bool done[PRODS + CONS];
-
-
 
 static void
 Consumer(void *n_) 
@@ -27,29 +26,31 @@ Consumer(void *n_)
         if (amount == 0)
             printf("Consumidor %d esperando (buffer vacio)\n", *n);
 
-        lock->Release();
+        while (amount == 0)
+            conditionCons->Wait();
 
-        char* produce = lista->Pop();
-
-        lock->Acquire();
-        conditionProd->Signal();
-        printf("Consumidor %d consume: %s\n", *n, produce);
         amount -= 1;
+        char* produce = buffer[amount];
+
+        conditionProd->Signal();
+
+        printf("Consumidor %d consume: %s en %d\n", *n, produce, amount);
 
         lock->Release();
     }
-    
+
     printf("Consumidor %d termina\n", *n);
     done[*n] = true;
     delete n;
 }
+
 static void
 Producer(void *n_)
 {
     unsigned *n = (unsigned *) n_;
     for (unsigned i = 0; i < MAX_ITERS; i++) {
         lock->Acquire();
-        
+
         if (amount == MAX_AMOUNT)
             printf("Productor %d esperando (buffer lleno)\n", *n);
 
@@ -58,14 +59,16 @@ Producer(void *n_)
 
         char* produce = new char[64];
         sprintf(produce, "%d_%d", *n, i);
-        lista->Append(produce);
-        amount += 1;
+        buffer[amount] = produce;
+
+        conditionCons->Signal();
+
         printf("Productor %d produce: %s en %d\n", *n, produce, amount);
+        amount += 1;
 
         lock->Release();
     }
-    
-    
+
     printf("Productor %d termina\n", *n);
     done[CONS + (*n)] = true;
     delete n;
